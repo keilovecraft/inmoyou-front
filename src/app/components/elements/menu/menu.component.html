@@ -1,0 +1,11 @@
+<nav class="menu">
+  <a *ngIf="!isLogged" class="menu__item" [routerLink]="['/register']" [routerLinkActive]="['active']">Registrarse</a>
+  <a *ngIf="isLogged && !isCompany && !isAdmin" class="menu__item" [routerLink]="['/favourites']" [routerLinkActive]="['active']">Mis favoritos</a>
+  <a *ngIf="isLogged && !isAdmin" class="menu__item" [routerLink]="['/my-advertisements']" [routerLinkActive]="['active']">Mis anuncios</a>
+  <a *ngIf="isLogged && isAdmin" class="menu__item" [routerLink]="['/administration']" [routerLinkActive]="['active']">Administración</a>
+  <a *ngIf="isLogged" class="menu__item" [routerLink]="['/profile']" [routerLinkActive]="['active']">Mi perfil</a>
+</nav>
+<app-button class="menu__button"
+  [text]="!isLogged ? 'Iniciar sesión' : 'Cerrar sesión'"
+  (action)="navigateToAuth()"
+></app-button>

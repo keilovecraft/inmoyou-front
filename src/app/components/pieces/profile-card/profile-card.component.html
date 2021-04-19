@@ -1,0 +1,15 @@
+<div *ngIf="user" class="profile-card">
+  <h3 class="profile-card__title">Contacto</h3>
+  <div *ngIf="user.logo" class="profile-card__image-wrapper">
+    <img class="profile-card__image" [src]="user.logo" />
+  </div>
+  <div *ngIf="user && user.name" class="profile-card__author">
+    <span>{{ user.name }}</span>
+    <span *ngIf="user.lastName"> {{ user.lastName }}</span>
+  </div>
+
+  <ul class="profile-card__contact">
+    <li class="profile-card__item profile-card__item--phone" *ngIf="user.phone && (user.contactForm === 'tel' || user.contactForm === 'both')">{{ user.phone }}</li>
+    <li class="profile-card__item profile-card__item--mail" *ngIf="user.contactForm === 'email' || user.contactForm === 'both'">{{ user.email }}</li>
+  </ul>
+</div>

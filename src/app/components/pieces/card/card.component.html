@@ -1,0 +1,42 @@
+<app-modal-confirm *ngIf="deleteShow"
+  (action)="deleteAction($event)"
+></app-modal-confirm>
+<div class="card">
+  <p *ngIf="!published" class="card__no-published">Pendiente de aprobación</p>
+  <img class="card__image" [src]="image" />
+  <div class="card__detail">
+    <h3 class="card__title" (click)="navigateDetail()">{{ type }} en calle {{ street }}, {{ number }}</h3>
+    <div class="card__info">
+      <span class="card__info-item card__info-item--bold">{{ price }} €</span>
+      <span class="card__info-item">{{ rooms }} hab.</span>
+      <span class="card__info-item">{{ meters }} m².</span>
+    </div>
+    <div class="card__description">
+      {{ descr }}
+    </div>
+    <div class="card__footer">
+      <div class="card__buttons">
+        <button *ngIf="isAdmin"
+          class="card__button card__button--approve"
+          (click)="approveAction()"
+        ></button>
+        <button *ngIf="isEdit || isAdmin"
+          class="card__button card__button--delete"
+          (click)="showModalDelete()"
+        ></button>
+        <button *ngIf="isEdit"
+          class="card__button card__button--edit"
+          (click)="editAction()"
+        ></button>
+        <button *ngIf="canFav"
+          class="card__button card__button--fav-fill"
+          [ngClass]="{
+            'card__button--fav-fill': isFav,
+            'card__button--fav': !isFav
+          }"
+          (click)="favAction()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

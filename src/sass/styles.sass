@@ -1,0 +1,112 @@
+@import './helpers', './variables'
+
+*,
+*:after,
+*:before
+  box-sizing: border-box
+
+html
+  font-size: 100%
+  font-family: 'Open Sans', sans-serif
+
+body
+  width: 100vw
+  height: 100vh
+
+  margin: 0
+  color: var(--default-color)
+
+h1,
+h2,
+h3,
+h4
+  color: var(--headings-color)
+  font-weight: 700
+
+h2
+  font-size: 1.5em
+  margin-top: 0
+
+h3
+  font-size: 1.25em
+  margin-bottom: .5em
+
+img
+  max-width: 100%
+
+a
+  color: var(--link-color)
+  text-decoration: none
+  &.active
+    color: var(--link-active-color)
+    font-weight: 400
+
+label
+  font-weight: 600
+  color: var(--primary-color)
+  margin-bottom: .25em
+
+select
+  -webkit-appearance: none
+  -moz-appearance: none
+  appearance: none
+  background: var(--white) url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") 100% center no-repeat
+  font-family: inherit
+  font-size: inherit
+  outline: none
+
+  width: 100%
+  height: 2.5em
+  border: 1px solid var(--border-color)
+  border-radius: var(--border-radius)
+  padding: .25em 1.5em .25em .5em
+  cursor: pointer
+
+input[type=radio],
+input[type=checkbox]
+  cursor: pointer
+
+input[type=file]
+  font: inherit
+  color: inherit
+
+textarea,
+input:not([type=button]):not([type=radio]):not([type=checkbox]):not([type=file])
+  border: 1px solid var(--border-color)
+  border-radius: 4px
+  background-color: var(--white)
+  width: 100%
+  font: inherit
+  color: inherit
+  padding: .5em 1em
+
+input[type=text],
+select
+  max-height: 2.5em
+
+textarea
+  height: 10em
+
+ul
+  padding: 0
+  list-style: none
+  li
+    margin-bottom: .5em
+
+.swiper
+  &-pagination-bullet
+    background: var(--secondary-color)
+    opacity: .5
+    &-active
+      background: var(--primary-color)
+      opacity: 1
+  &-button-prev,
+  &-button-next
+    color: var(--primary-color)
+  &-button-disabled
+    color: var(--secondary-color)
+    opacity: .5
+
+.invalid-feedback
+  color: var(--error-color)
+  font-size: .85em

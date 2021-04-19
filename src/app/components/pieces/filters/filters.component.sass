@@ -1,0 +1,42 @@
+.filters
+  $parent-node: &
+
+  margin-top: 1em
+  &__wrapper
+    margin: 0
+    padding: 0
+    border: none
+  &__label
+    display: block
+    margin-bottom: .25em
+    font-weight: 600
+    color: var(--primary-color)
+  &__item
+    margin-bottom: 1em
+    &--double
+      display: flex
+      flex-wrap: wrap
+      #{$parent-node}__label
+        flex-basis: 100%
+    &-wrapper
+      display: flex
+      align-items: center
+      margin-right: .5em
+  &__select--double
+    flex-basis: calc(50% - .5em)
+    &:first-of-type
+      margin-right: .5em
+    &:last-of-type
+      margin-left: .5em
+  &__checkbox
+    margin-left: 0
+  &__option
+    font: inherit
+    color: inherit
+    font-weight: inherit
+    margin-bottom: 0
+    margin-left: .25em
+  &__button
+    display: flex
+    justify-content: center
+    margin-top: 2em

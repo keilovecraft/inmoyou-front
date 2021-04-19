@@ -1,0 +1,61 @@
+:host
+  margin-top: 2em
+
+.profile
+  display: flex
+  flex-direction: column
+  &__title
+    margin-bottom: 1em
+  &__wrapper
+    border: none
+    width: calc(100% + 2em)
+    padding: 0
+    display: flex
+    flex-wrap: wrap
+    margin: 0 -1em
+  &__item
+    display: flex
+    flex-wrap: wrap
+    margin-bottom: 1em
+    flex-basis: 50%
+    padding: 0 1em
+    &--multiple
+      flex-basis: 100%
+      padding: 0
+      .profile__item
+        flex-basis: 25%
+    &-wrapper
+      display: flex
+      align-items: center
+      margin-right: .5em
+    &-file
+      flex-wrap: nowrap
+      align-items: flex-end
+      max-width: 50%
+      img
+        margin-right: 1em
+        width: 56px
+  &__label
+    font-weight: 600
+    color: var(--primary-color)
+    margin-top: 0
+    margin-bottom: .25em
+    width: 100%
+    text-align: left
+  &__option
+    font: inherit
+    color: inherit
+    font-weight: inherit
+    margin-bottom: 0
+    margin-left: .25em
+  &__descr
+    margin-top: 2em
+    color: var(--light-gray)
+    font-size: .85em
+    &-item
+      margin: 0
+      text-align: center
+  &__button
+    margin-top: 4em
+    display: block
+    text-align: center

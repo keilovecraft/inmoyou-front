@@ -1,0 +1,23 @@
+<h2 class="favourites__title">Mis favoritos</h2>
+
+<ul>
+  <li *ngFor="let add of advertisements"
+    class="advertisements__item"
+  >
+      <app-card
+        [id]="add._id"
+        [image]="add.images[0]"
+        [type]="add.type"
+        [street]="add.address.street"
+        [number]="add.address.number"
+        [price]="add.price"
+        [rooms]="add.rooms"
+        [meters]="add.size"
+        [descr]="add.description"
+        [canFav]="true"
+        [isFav]="true"
+        [published]="add.published"
+        (fav)="removeFav(add._id)"
+      ></app-card>
+  </li>
+</ul>

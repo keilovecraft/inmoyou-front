@@ -1,0 +1,82 @@
+<div class="filters">
+  <h3 class="filters__title accessible-hide">Filtros</h3>
+
+  <form class="filters__form" [formGroup]="filtersForm" (ngSubmit)="submitForm()">
+    <fieldset class="filters__wrapper">
+      <legend class="accessible-hide">Filtros</legend>
+
+      <div class="filters__item">
+        <label class="filters__label">Vivienda:</label>
+        <select formControlName="type">
+          <option value="">Todas</option>
+          <option *ngFor="let type of typesHouse" [ngValue]="type">{{type}}
+          </option>
+        </select>
+      </div>
+  
+      <div class="filters__item">
+        <label class="filters__label">Arrendador:</label>
+        <select formControlName="lessor">
+          <option value="">Todos</option>
+          <option *ngFor="let lessor of typesLessors" [ngValue]="lessor">{{lessor}}
+          </option>
+        </select>
+      </div>
+
+      <div class="filters__item">
+        <label class="filters__label">Ubicación:</label>
+        <select formControlName="city">
+          <option value="">Todas</option>
+          <option *ngFor="let city of cities" [ngValue]="city">{{city}}
+          </option>
+        </select>
+      </div>
+
+      <div class="filters__item filters__item--double">
+        <label class="filters__label">Precio:</label>
+        <select formControlName="priceMin" class="filters__select--double">
+          <option value="">Min.</option>
+          <option *ngFor="let priceMin of pricesMin" [ngValue]="priceMin">{{priceMin}}
+          </option>
+        </select>
+        <select formControlName="priceMax" class="filters__select--double">
+          <option value="">Max.</option>
+          <option *ngFor="let priceMax of pricesMax" [ngValue]="priceMax">{{priceMax}}
+          </option>
+        </select>
+      </div>
+  
+      <div class="filters__item">
+        <label class="filters__label">Tamaño:</label>
+        <select formControlName="size">
+          <option value="">Min.</option>
+          <option *ngFor="let size of sizes" [ngValue]="size">{{size}}
+          </option>
+        </select>
+      </div>
+  
+      <div class="filters__item">
+        <label class="filters__label">Habitaciones:</label>
+        <select formControlName="rooms">
+          <option value="">Min.</option>
+          <option *ngFor="let rooms of roomsArr" [ngValue]="rooms">{{rooms}}
+          </option>
+        </select>
+      </div>
+
+      <div class="filters__item">
+        <p class="filters__label">Servicios:</p>
+        <div *ngFor="let item of otherServices" class="filters__item-wrapper">
+          <input type="checkbox" class="filters__checkbox" [formControlName]="item.value" [ngValue]="item.value"/> 
+          <label class="filters__option">{{ item.name }}</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <app-button
+      class="filters__button"
+      text="Nueva búsqueda"
+      type="submit"
+    ></app-button>
+  </form>
+</div>

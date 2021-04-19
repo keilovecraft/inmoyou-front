@@ -1,0 +1,10 @@
+<button [id]="id"
+  [disabled]="isDisabled === true"
+  [ngClass]="{
+    'button--disabled': isDisabled !== false
+  }"
+  [type]="type"
+  (click)="buttonClicked()"
+>
+  {{ text }}
+</button>

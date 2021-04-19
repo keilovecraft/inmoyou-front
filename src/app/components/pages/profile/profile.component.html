@@ -1,0 +1,111 @@
+<div class="profile">
+  <h2 class="profile__title">Mi Perfil</h2>
+
+  <form class="profile__form" [formGroup]="profileForm" (ngSubmit)="submitForm()">
+    <fieldset class="profile__wrapper">
+      <legend class="accessible-hide">Registro</legend>
+
+      <div class="profile__item">
+        <label class="profile__label">Nombre: *</label>
+        <input type="text" [formControlName]="'name'">
+        <div class="invalid-feedback" *ngIf="(profileForm.get('name').dirty || profileForm.get('name').touched) && profileForm.get('name').errors?.required">
+          Este campo es obligatorio.
+        </div> 
+      </div>
+
+      <div *ngIf="!isCompany === true" class="profile__item">
+        <label class="profile__label">Apellidos: *</label>
+        <input type="text" [formControlName]="'surname'">
+        <div class="invalid-feedback" *ngIf="(profileForm.get('surname').dirty || profileForm.get('surname').touched) && profileForm.get('surname').errors?.required">
+          Este campo es obligatorio.
+        </div>
+      </div>
+
+      <div class="profile__item">
+        <label class="profile__label">Correo electrónico: *</label>
+        <input type="email" [formControlName]="'email'" email>
+        <div class="invalid-feedback" *ngIf="(profileForm.get('email').dirty || profileForm.get('email').touched) && profileForm.get('email').errors?.required">
+          Este campo es obligatorio.
+        </div>
+        <div class="invalid-feedback" *ngIf="(profileForm.get('email').dirty || profileForm.get('email').touched) && profileForm.get('email').errors?.email">
+          Este campo no es un email.
+        </div>
+      </div>
+
+      <div class="profile__item">
+        <label class="profile__label">Teléfono: *</label>
+        <input type="tel" [formControlName]="'phone'">
+        <div class="invalid-feedback" *ngIf="(profileForm.get('phone').dirty || profileForm.get('phone').touched) && profileForm.get('phone').errors?.required">
+          Este campo es obligatorio.
+        </div>
+        <div class="invalid-feedback" *ngIf="profileForm.get('phone').touched && profileForm.get('phone').hasError('pattern')">
+          Este campo solo admite 9 números.
+        </div>
+      </div>
+
+      <div class="profile__item">
+        <label class="profile__label">Contraseña: *</label>
+        <input type="password" [formControlName]="'password'" >
+        <div class="invalid-feedback" *ngIf="(profileForm.get('password').dirty || profileForm.get('password').touched) && profileForm.get('password').errors?.required">
+          Este campo es obligatorio.
+        </div>
+        <div class="invalid-feedback" *ngIf="profileForm.get('password').touched && profileForm.get('password').hasError('pattern')">
+          La contraseña debe tener mínimo 6 caracteres.
+        </div>
+      </div>
+
+      <div *ngIf="isCompany === true" class="profile__item profile__item--multiple">
+        <div class="profile__item profile__item--child">
+          <label class="profile__label">Calle:</label>
+          <input type="text" [formControlName]="'street'">
+        </div>
+        <div class="profile__item profile__item--child">
+          <label class="profile__label">Número:</label>
+          <input type="text" [formControlName]="'number'">
+        </div>
+        <div class="profile__item profile__item--child">
+          <label class="profile__label">Código postal:</label>
+          <input type="text" [formControlName]="'postalCode'">
+        </div>
+        <div class="profile__item profile__item--child">
+          <label class="profile__label">Ciudad:</label>
+          <select formControlName="city">
+            <option value="">Selecciona</option>
+            <option *ngFor="let city of cities">{{city}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="profile__item">
+        <p class="profile__label">Forma de contacto:</p>
+        <div class="profile__item-wrapper">
+          <input type="checkbox" [formControlName]="'contactPhone'" value="contactPhone" /> 
+          <label class="profile__option">Teléfono</label>
+        </div>
+        <div class="profile__item-wrapper">
+          <input type="checkbox" [formControlName]="'contactEmail'" value="contactEmail" /> 
+          <label class="profile__option">Correo electrónico</label>
+        </div>
+      </div>
+
+      <div *ngIf="isCompany === true" class="profile__item profile__item-file">
+        <img *ngIf="user && user.logo" class="profile__image" [src]="user.logo" />
+        <input type="file" name="file" (change)="selectFile($event)">
+      </div>
+
+    </fieldset>
+
+    <div class="profile__descr">
+      <p class="profile__descr-item">En caso de no rellenar una forma de contacto, tu forma de contacto será por defecto el correo proporcionado.</p>
+      <p class="profile__descr-item">No podrás modificar el tipo de perfil (particular o inmobiliaria) más adelante.</p>
+    </div>
+
+    <app-button
+      class="profile__button"
+      text="Guardar"
+      type="submit"
+      [isDisabled]="!profileForm.valid"
+    ></app-button>
+  </form>
+</div>

@@ -1,0 +1,169 @@
+<div class="register">
+  <h2 class="register__title">Registro</h2>
+
+  <form class="register__form" [formGroup]="registerForm" (ngSubmit)="submitForm()">
+    <fieldset class="register__wrapper">
+      <legend class="accessible-hide">Registro</legend>
+
+      <div class="register__item">
+        <p class="register__label">Tipo de perfil:</p>
+        <div class="register__item-wrapper">
+          <input id="people" type="radio" [formControlName]="'userType'" value="people" name="userType" (change)="changeTypeUser($event.target.value)">
+          <label class="register__option" for="people">Particular</label>
+        </div>
+        <div class="register__item-wrapper">
+          <input id="company" type="radio" [formControlName]="'userType'" value="company" name="userType" (change)="changeTypeUser($event.target.value)">
+          <label class="register__option" for="company">Inmobiliaria</label>
+        </div>
+      </div>
+
+      <div class="register__item">
+        <label class="register__label">Nombre: *</label>
+        <input type="text" [formControlName]="'name'">
+        <div class="invalid-feedback" *ngIf="(registerForm.get('name').dirty || registerForm.get('name').touched) && registerForm.get('name').errors?.required">
+          Este campo es obligatorio.
+        </div> 
+      </div>
+
+      <div *ngIf="!isCompany" class="register__item">
+        <label class="register__label">Apellidos: *</label>
+        <input type="text" [formControlName]="'surname'">
+        <div class="invalid-feedback" *ngIf="(registerForm.get('surname').dirty || registerForm.get('surname').touched) && registerForm.get('surname').errors?.required">
+          Este campo es obligatorio.
+        </div>
+      </div>
+
+      <div class="register__item">
+        <label class="register__label">Correo electrónico: *</label>
+        <input type="email" [formControlName]="'email'" email>
+        <div class="invalid-feedback" *ngIf="(registerForm.get('email').dirty || registerForm.get('email').touched) && registerForm.get('email').errors?.required">
+          Este campo es obligatorio.
+        </div>
+        <div class="invalid-feedback" *ngIf="(registerForm.get('email').dirty || registerForm.get('email').touched) && registerForm.get('email').errors?.email">
+          Este campo no es un email.
+        </div>
+      </div>
+
+      <div class="register__item">
+        <label class="register__label">Teléfono: *</label>
+        <input type="tel" [formControlName]="'phone'">
+        <div class="invalid-feedback" *ngIf="(registerForm.get('phone').dirty || registerForm.get('phone').touched) && registerForm.get('phone').errors?.required">
+          Este campo es obligatorio.
+        </div>
+        <div class="invalid-feedback" *ngIf="registerForm.get('phone').touched && registerForm.get('phone').hasError('pattern')">
+          Este campo solo admite 9 números.
+        </div>
+      </div>
+
+      <div class="register__item">
+        <label class="register__label">Contraseña: *</label>
+        <input type="password" [formControlName]="'password'" >
+        <div class="invalid-feedback" *ngIf="(registerForm.get('password').dirty || registerForm.get('password').touched) && registerForm.get('password').errors?.required">
+          Este campo es obligatorio.
+        </div>
+        <div class="invalid-feedback" *ngIf="registerForm.get('password').touched && registerForm.get('password').hasError('pattern')">
+          La contraseña debe tener mínimo 6 caracteres.
+        </div>
+      </div>
+
+      <div *ngIf="isCompany" class="register__item register__item--multiple">
+        <div class="register__item register__item--child">
+          <label class="register__label">Calle:</label>
+          <input type="text" [formControlName]="'street'">
+        </div>
+        <div class="register__item register__item--child">
+          <label class="register__label">Número:</label>
+          <input type="text" [formControlName]="'number'">
+        </div>
+        <div class="register__item register__item--child">
+          <label class="register__label">Código postal:</label>
+          <input type="text" [formControlName]="'postalCode'">
+        </div>
+        <div class="register__item register__item--child">
+          <label class="register__label">Ciudad:</label>
+          <select formControlName="city">
+            <option value="">Selecciona</option>
+            <option *ngFor="let city of cities">{{city}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="register__item">
+        <p class="register__label">Forma de contacto:</p>
+        <div class="register__item-wrapper">
+          <input type="checkbox" [formControlName]="'contactPhone'" value="contactPhone" /> 
+          <label class="register__option">Teléfono</label>
+        </div>
+        <div class="register__item-wrapper">
+          <input type="checkbox" [formControlName]="'contactEmail'" value="contactEmail" /> 
+          <label class="register__option">Correo electrónico</label>
+        </div>
+      </div>
+
+      <div *ngIf="isCompany" class="register__item register__item-file">
+        <img class="register__image" src="https://loremflickr.com/g/600/400/paris" />
+        <input type="file" name="file" (change)="selectFile($event)">
+      </div>
+
+    </fieldset>
+
+    <div class="register__descr">
+      <p class="register__descr-item">En caso de no rellenar una forma de contacto, tu forma de contacto será por defecto el correo proporcionado.</p>
+      <p class="register__descr-item">No podrás modificar el tipo de perfil (particular o inmobiliaria) más adelante.</p>
+    </div>
+
+    <app-button
+      class="register__button"
+      text="Guardar"
+      type="submit"
+      [isDisabled]="!registerForm.valid"
+    ></app-button>
+  </form>
+
+  <!-- <form action='http://localhost:3700/upload' method="POST" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="submit" value="Subir">
+</form> -->
+<!-- 
+<div class="row">
+  <div class="col-8">
+    <label class="btn btn-default p-0">
+      <input type="file" (change)="selectFile($event)" />
+    </label>
+  </div>
+
+  <div class="col-4">
+    <button class="btn btn-success btn-sm" [disabled]="!selectedFiles" (click)="upload()">
+      Upload
+    </button>
+  </div>
+</div>
+
+<div *ngIf="currentFile" class="progress my-3">
+  <div
+    class="progress-bar progress-bar-info progress-bar-striped"
+    role="progressbar"
+    attr.aria-valuenow="{{ progress }}"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [ngStyle]="{ width: progress + '%' }"
+  >
+    {{ progress }}%
+  </div>
+</div>
+
+<div *ngIf="message" class="alert alert-secondary" role="alert">{{ message }}</div>
+
+<div class="card mt-3">
+  <div class="card-header">List of Files</div>
+  <ul
+    class="list-group list-group-flush"
+    *ngFor="let file of fileInfos | async"
+  >
+    <li class="list-group-item">
+      <a href="{{ file.url }}">{{ file.name }}</a>
+    </li>
+  </ul>
+</div> -->
+</div>

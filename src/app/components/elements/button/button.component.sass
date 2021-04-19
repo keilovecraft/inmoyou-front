@@ -1,0 +1,25 @@
+:host
+  --button-bg: var(--secondary-color)
+  --button-color: var(--white)
+  --button-height: 2.5em
+  --button-radius: .5em
+  --button-border: none
+  --button-padding: .5em 1em
+  --button-font: 400 1em 'Open Sans'
+
+button
+  cursor: pointer
+  min-width: 10em
+  background-color: var(--button-bg)
+  color: var(--button-color)
+  border: var(--button-border)
+  border-radius: var(--button-radius)
+  height: var(--button-height)
+  padding: var(--button-padding)
+  font: var(--button-font)
+  transition: background .5s ease
+  &:not([disabled]):hover
+    background-color: var(--primary-color)
+  &[disabled]
+    opacity: .7
+    pointer-events: none

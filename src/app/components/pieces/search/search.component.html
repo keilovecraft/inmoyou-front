@@ -1,0 +1,38 @@
+<form class="search" [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+  <fieldset class="search__wrapper">
+    <legend class="search__title">Encuentra tu vivienda perfecta</legend>
+
+    <div class="search__item">
+      <label>Tipo:</label>
+      <select formControlName="type">
+        <option value="all">Todas</option>
+        <option *ngFor="let type of typesHouse">{{type}}
+        </option>
+      </select>
+    </div>
+
+    <div class="search__item">
+      <label>Arrendador:</label>
+      <select formControlName="lessor">
+        <option value="all">Todas</option>
+        <option *ngFor="let lessor of typesLessors">{{lessor}}
+        </option>
+      </select>
+    </div>
+
+    <div class="search__item">
+      <label>Ubicación:</label>
+      <select formControlName="city">
+        <option value="all">Todas</option>
+        <option *ngFor="let city of cities">{{city}}
+        </option>
+      </select>
+    </div>
+
+  </fieldset>
+  <app-button
+    class="search__button"
+    text="Buscar"
+    type="submit"
+  ></app-button>
+</form>

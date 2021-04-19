@@ -1,0 +1,32 @@
+.services
+  $root: &
+  margin-top: 2em
+  display: flex
+  flex-wrap: wrap
+  justify-content: space-around
+  &__title
+    flex-basis: 100%
+    margin: 0
+  &__subtitle
+    margin-bottom: 1em
+    padding-top: 3em
+    background: url("../../../../assets/img/ico-smiley.svg") center top no-repeat
+    background-size: 3em
+    text-align: center
+  &__block
+    &:last-child
+      #{$root}__subtitle
+        background: url("../../../../assets/img/ico-house.svg") center top no-repeat
+        background-size: 3.25em
+  &__list
+    margin: 0
+    list-style: none
+  &__item
+    margin-bottom: .5em
+    &:before
+      content: "\2022"
+      color: var(--primary-color)
+      font-weight: bold
+      display: inline-block
+      width: 1em
+      margin-left: -1em

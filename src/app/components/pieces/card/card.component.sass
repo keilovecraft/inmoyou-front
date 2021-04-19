@@ -1,0 +1,65 @@
+.card
+  box-shadow: 0 2px 5px var(--border-color)
+  padding: 2em
+  display: flex
+  width: 100%
+  position: relative
+  &__no-published
+    position: absolute
+    top: 0
+    right: 3em
+    font-size: 0.75em
+    color: var(--error-color)
+  &__image
+    width: calc(35% - 1em)
+    height: fit-content
+    margin-right: 1em
+  &__title
+    margin-top: 0
+    margin-bottom: 0
+    cursor: pointer
+  &__info
+    margin-bottom: 1em
+    &-item
+      color: var(--light-gray)
+      font-size: .85em
+      margin-right: .5em
+      &--bold
+        margin-right: 1em
+        font-weight: 700
+        color: inherit
+        font-size: 1em
+  &__description
+    padding-bottom: 3em
+  &__footer
+    position: absolute
+    bottom: 2em
+    right: 2em
+    text-align: right
+  &__author
+    margin: 0
+    font-weight: 600
+  &__button
+    cursor: pointer
+    outline: none
+    width: 2.5em
+    height: 2.5em
+    background-color: transparent
+    border: none
+    display: inline-block
+    background-repeat: no-repeat
+    background-position: center
+    background-size: contain
+    padding: 0
+    &:hover
+      opacity: .8
+    &--delete
+      background-image: url("../../../../assets/img/ico-delete.svg")
+    &--edit
+      background-image: url("../../../../assets/img/ico-edit.svg")
+    &--fav
+      background-image: url("../../../../assets/img/ico-fav.svg")
+    &--fav-fill
+      background-image: url("../../../../assets/img/ico-fav-fill.svg")
+    &--approve
+      background-image: url("../../../../assets/img/ico-approve.svg")

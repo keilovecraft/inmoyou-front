@@ -1,0 +1,33 @@
+.profile-card
+  box-shadow: 0 2px 5px var(--border-color)
+  padding: 1em
+  display: flex
+  flex-wrap: wrap
+  width: 100%
+  position: relative
+  &__title
+    flex-basis: 100%
+    margin: 0 0 1em
+  &__image
+    max-width: 50%
+    &-wrapper
+      padding-bottom: 1em
+      margin-bottom: 1em
+      border-bottom: 1px solid var(--border-color)
+      text-align: center
+  &__author
+    text-align: center
+    width: 100%
+    margin-bottom: 1em
+  &__item
+    padding-left: 2em
+    background-color: transparent
+    background-repeat: no-repeat
+    font-size: .85em
+    &--mail
+      background-size: 1.5em
+      background-position-y: 1px
+      background-image: url("../../../../assets/img/ico-mail.svg")
+    &--phone
+      background-size: 1.4em
+      background-image: url("../../../../assets/img/ico-phone.svg")

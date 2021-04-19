@@ -1,0 +1,34 @@
+<h2 class="advertisements__title"><span>{{ numAdvertisements }} viviendas</span><span *ngIf="filters.city"> en {{ filters.city }}</span></h2>
+
+<app-filters class="advertisements__filters"
+  [paramsFilters]="filters"
+  (filters)="filterAdvertisements($event)"
+></app-filters>
+
+<div class="advertisements__list">
+  <form class="advertisements__order" [formGroup]="orderForm">
+    <label>Ordenar por:</label>
+    <select formControlName="order" (change)="changeOrder($event.target.value)">
+      <option *ngFor="let order of typesOrder; let i = index" [ngValue]="order.value">{{ order.name }}
+      </option>
+    </select>
+  </form>
+  
+  <ul>
+    <li *ngFor="let add of advertisementsFiltered"
+      class="advertisements__item"
+    >
+        <app-card
+          [id]="add._id"
+          [image]="add.images[0]"
+          [type]="add.type"
+          [street]="add.address.street"
+          [number]="add.address.number"
+          [price]="add.price"
+          [rooms]="add.rooms"
+          [meters]="add.size"
+          [descr]="add.description"
+        ></app-card>
+    </li>
+  </ul>
+</div>

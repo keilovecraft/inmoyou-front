@@ -1,0 +1,29 @@
+<div class="my-adverts__header">
+  <h2 class="my-adverts__title">Mis anuncios</h2>
+
+  <app-button class="my-adverts__new-button"
+    text="Crear anuncio"
+    (action)="navigateToCreate()"
+  ></app-button>
+</div>
+
+<ul>
+  <li *ngFor="let add of advertisements"
+    class="advertisements__item"
+  >
+      <app-card
+        [id]="add._id"
+        [image]="add.images[0]"
+        [type]="add.type"
+        [street]="add.address.street"
+        [number]="add.address.number"
+        [price]="add.price"
+        [rooms]="add.rooms"
+        [meters]="add.size"
+        [descr]="add.description"
+        [isEdit]="true"
+        [published]="add.published"
+        (delete)="removeFromArray($event)"
+      ></app-card>
+  </li>
+</ul>
