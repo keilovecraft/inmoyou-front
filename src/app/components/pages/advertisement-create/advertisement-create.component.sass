@@ -6,7 +6,6 @@
     align-content: flex-start
     &:last-of-type
       border-left: 1px solid var(--border-color)
-      
   &__wrapper
     border: none
     width: calc(100% + 2em)
@@ -15,6 +14,7 @@
     flex-wrap: wrap
     margin: 0 -1em
   &__label
+    font-size: .85em
     font-weight: 600
     color: var(--primary-color)
     margin-top: 0
@@ -26,7 +26,7 @@
   &__item
     display: flex
     flex-wrap: wrap
-    align-content: baseline
+    align-content: flex-end
     margin-bottom: 1em
     flex-basis: 50%
     padding: 0 1em
@@ -57,3 +57,15 @@
     display: flex
     justify-content: center
     margin-top: 2em
+  &__descr
+    margin-top: 4em
+    color: var(--light-gray)
+    font-size: .85em
+    &-item
+      margin: 0
+      text-align: center
+  &__image
+    width: 50px
+    margin-right: .25em
+    &-wrapper
+      display: flex

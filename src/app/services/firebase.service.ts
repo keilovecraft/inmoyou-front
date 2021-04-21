@@ -17,13 +17,8 @@ export class FirebaseAuthService {
     /* Saving user data in localstorage when 
     logged in and setting up null when logged out */
     this.afAuth.authState.subscribe(user => {
-      if (user) {
-        this.userData = user;
-        localStorage.setItem('user', JSON.stringify(this.userData));
-        JSON.parse(localStorage.getItem('user'));
-      } else {
-        localStorage.setItem('user', null);
-        JSON.parse(localStorage.getItem('user'));
+      if (!user) {
+        localStorage.removeItem('mongoUser');
       }
     })
   }
@@ -37,7 +32,7 @@ export class FirebaseAuthService {
     return this.afAuth.signInWithEmailAndPassword(email, password)
       .then((result) => {
         this.ngZone.run(() => {
-          this.router.navigate(['home']);
+          this.router.navigate(['/']);
         });
       }).catch((error) => {
         window.alert(error.message)
@@ -61,14 +56,43 @@ export class FirebaseAuthService {
 
   // Returns true when user is looged in and email is verified
   get isLoggedIn(): boolean {
-    const user = JSON.parse(localStorage.getItem('user'));
-    return (user !== null && user.emailVerified !== false) ? true : false;
+    const user = JSON.parse(localStorage.getItem('mongoUser'));
+    return user !== null ? true : false;
+  }
+
+  // Update email and/or password
+  UpdateEmailPassword (email?: string, password?: string): Promise<any> {
+    const promiseArr: Array<Promise<void>> = [];
+    return new Promise((resolve, reject) => {
+      this.afAuth.currentUser
+        .then((user) => {
+          if (email) {
+            const emailPromise = user.updateEmail(email)
+            promiseArr.push(emailPromise);
+          }
+          if (password) {
+            const passPromise = user.updatePassword(password)
+            promiseArr.push(passPromise);
+          }
+
+          Promise.all(promiseArr)
+            .then((values) => {
+              resolve(values);
+            })
+            .catch((err) => {
+              reject(err);
+            })
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
   }
 
   // Sign out
   SignOut() {
     return this.afAuth.signOut().then(() => {
-      localStorage.removeItem('user');
+      localStorage.removeItem('mongoUser');
       this.router.navigate(['login']);
     })
   }

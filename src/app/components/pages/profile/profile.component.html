@@ -23,13 +23,7 @@
 
       <div class="profile__item">
         <label class="profile__label">Correo electrónico: *</label>
-        <input type="email" [formControlName]="'email'" email>
-        <div class="invalid-feedback" *ngIf="(profileForm.get('email').dirty || profileForm.get('email').touched) && profileForm.get('email').errors?.required">
-          Este campo es obligatorio.
-        </div>
-        <div class="invalid-feedback" *ngIf="(profileForm.get('email').dirty || profileForm.get('email').touched) && profileForm.get('email').errors?.email">
-          Este campo no es un email.
-        </div>
+        <input type="email" [formControlName]="'email'" email disabled>
       </div>
 
       <div class="profile__item">
@@ -68,7 +62,7 @@
           <input type="text" [formControlName]="'postalCode'">
         </div>
         <div class="profile__item profile__item--child">
-          <label class="profile__label">Ciudad:</label>
+          <label class="profile__label">Provincia:</label>
           <select formControlName="city">
             <option value="">Selecciona</option>
             <option *ngFor="let city of cities">{{city}}
@@ -98,7 +92,6 @@
 
     <div class="profile__descr">
       <p class="profile__descr-item">En caso de no rellenar una forma de contacto, tu forma de contacto será por defecto el correo proporcionado.</p>
-      <p class="profile__descr-item">No podrás modificar el tipo de perfil (particular o inmobiliaria) más adelante.</p>
     </div>
 
     <app-button

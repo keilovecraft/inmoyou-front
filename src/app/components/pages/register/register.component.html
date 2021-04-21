@@ -39,7 +39,7 @@
         <div class="invalid-feedback" *ngIf="(registerForm.get('email').dirty || registerForm.get('email').touched) && registerForm.get('email').errors?.required">
           Este campo es obligatorio.
         </div>
-        <div class="invalid-feedback" *ngIf="(registerForm.get('email').dirty || registerForm.get('email').touched) && registerForm.get('email').errors?.email">
+        <div class="invalid-feedback" *ngIf="registerForm.get('email').touched && registerForm.get('email').hasError('pattern')">
           Este campo no es un email.
         </div>
       </div>
@@ -73,14 +73,14 @@
         </div>
         <div class="register__item register__item--child">
           <label class="register__label">Número:</label>
-          <input type="text" [formControlName]="'number'">
+          <input type="number" min="0" [formControlName]="'number'">
         </div>
         <div class="register__item register__item--child">
           <label class="register__label">Código postal:</label>
-          <input type="text" [formControlName]="'postalCode'">
+          <input type="number" min="0" [formControlName]="'postalCode'">
         </div>
         <div class="register__item register__item--child">
-          <label class="register__label">Ciudad:</label>
+          <label class="register__label">Provincia:</label>
           <select formControlName="city">
             <option value="">Selecciona</option>
             <option *ngFor="let city of cities">{{city}}
@@ -102,7 +102,6 @@
       </div>
 
       <div *ngIf="isCompany" class="register__item register__item-file">
-        <img class="register__image" src="https://loremflickr.com/g/600/400/paris" />
         <input type="file" name="file" (change)="selectFile($event)">
       </div>
 
@@ -118,52 +117,7 @@
       text="Guardar"
       type="submit"
       [isDisabled]="!registerForm.valid"
+      [isLoading]="creatingUser"
     ></app-button>
   </form>
-
-  <!-- <form action='http://localhost:3700/upload' method="POST" enctype="multipart/form-data">
-    <input type="file" name="file">
-    <input type="submit" value="Subir">
-</form> -->
-<!-- 
-<div class="row">
-  <div class="col-8">
-    <label class="btn btn-default p-0">
-      <input type="file" (change)="selectFile($event)" />
-    </label>
-  </div>
-
-  <div class="col-4">
-    <button class="btn btn-success btn-sm" [disabled]="!selectedFiles" (click)="upload()">
-      Upload
-    </button>
-  </div>
-</div>
-
-<div *ngIf="currentFile" class="progress my-3">
-  <div
-    class="progress-bar progress-bar-info progress-bar-striped"
-    role="progressbar"
-    attr.aria-valuenow="{{ progress }}"
-    aria-valuemin="0"
-    aria-valuemax="100"
-    [ngStyle]="{ width: progress + '%' }"
-  >
-    {{ progress }}%
-  </div>
-</div>
-
-<div *ngIf="message" class="alert alert-secondary" role="alert">{{ message }}</div>
-
-<div class="card mt-3">
-  <div class="card-header">List of Files</div>
-  <ul
-    class="list-group list-group-flush"
-    *ngFor="let file of fileInfos | async"
-  >
-    <li class="list-group-item">
-      <a href="{{ file.url }}">{{ file.name }}</a>
-    </li>
-  </ul>
-</div> -->
 </div>

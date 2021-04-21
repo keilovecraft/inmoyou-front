@@ -5,8 +5,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Auth
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireAuthModule } from "@angular/fire/auth";
+import { AngularFireStorageModule } from "@angular/fire/storage";
 import { environment } from '../environments/environment';
 import { FirebaseAuthService } from "./services/firebase.service";
+import { EventBusService } from "./services/event.service";
 
 // Routing
 import { AppRoutingModule } from './app-routing.module';
@@ -19,6 +21,7 @@ import { NgxUsefulSwiperModule } from 'ngx-useful-swiper';
 /** Elements */
 import { ButtonComponent } from './components/elements/button/button.component';
 import { MenuComponent } from './components/elements/menu/menu.component';
+import { SpinnerComponent } from './components/elements/spinner/spinner.component';
 
 /** Pieces */
 import { CardComponent } from './components/pieces/card/card.component';
@@ -46,6 +49,7 @@ import { ModalConfirmComponent } from './components/pieces/modal-confirm/modal-c
     AppComponent,
     AdvertisementsComponent,
     ButtonComponent,
+    SpinnerComponent,
     HeaderComponent,
     HomeComponent,
     MenuComponent,
@@ -72,10 +76,12 @@ import { ModalConfirmComponent } from './components/pieces/modal-confirm/modal-c
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
+    AngularFireStorageModule,
     NgxUsefulSwiperModule
   ],
   providers: [
-    FirebaseAuthService
+    FirebaseAuthService,
+    EventBusService
   ],
   bootstrap: [AppComponent]
 })

@@ -39,7 +39,7 @@ export class SearchComponent {
       Object.assign(params, {city: this.searchForm.value.city});
     }
 
-    this._router.navigate(['/advertisements', params], {skipLocationChange: true});
+    this._router.navigate(['/advertisements', params]);
   }
 
 }

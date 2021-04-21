@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdvertisementService } from 'src/app/services/advertisement.service';
+import { EventBusService, EventData } from 'src/app/services/event.service';
+import { FirebaseStorageService } from 'src/app/services/firestore.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -38,7 +40,9 @@ export class CardComponent{
     private _router: Router,
     private cd: ChangeDetectorRef,
     private _userService: UserService,
-    private _advertisementService: AdvertisementService
+    private _eventBusService: EventBusService,
+    private _advertisementService: AdvertisementService,
+    private _firebaseStorageService: FirebaseStorageService,
   ) { }
 
   /** Navega hasta el detalle del anuncio */
@@ -51,24 +55,31 @@ export class CardComponent{
     this._advertisementService.deleteAdvertisement(this.id).subscribe(
       response => {
         // Nos traemos los datos del usuario
-        let actualUser: any = JSON.parse(localStorage.getItem('user'));
-        if (actualUser) {
-          this._userService.getUser(actualUser.uid).subscribe((response: any) => {
-            actualUser = response.user;
-
-            // Lo eliminamos del array de usuario
-            const arrAdvertisements = actualUser.advertisements.filter(item => item !== this.id);
-            const updateData = {
-              _id: actualUser._id,
-              advertisements : arrAdvertisements
-            }
-            this._userService.updateUser(updateData).subscribe((response: {}) => {
+        let sessionUser: any = JSON.parse(localStorage.getItem('mongoUser'));
+        if (sessionUser) {
+          // Lo eliminamos del array de usuario
+          const arrAdvertisements = sessionUser.advertisements.filter(item => item !== this.id);
+          const updateData = {
+            _id: sessionUser._id,
+            advertisements : arrAdvertisements
+          }
+          this._userService.updateUser(updateData)
+            .then((value: any) => {
+              localStorage.removeItem('mongoUser');
+              localStorage.setItem('mongoUser', JSON.stringify(value.user));
+              this._firebaseStorageService.removePhotos(sessionUser._id, this.id)
+                .then(() => {
+                  this.showLoading(false);
+                  // Navegamos hasta mis anuncios.
+                  this.delete.emit(this.id);
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            })
+            .catch((err) => {
+              console.error(err);
             });
-
-            // Navegamos hasta mis anuncios.
-            this.delete.emit(this.id);
-
-          });
         }
       },
       error => {
@@ -80,10 +91,16 @@ export class CardComponent{
   /** Accion que recoge los datos de la modal para borrar un anuncio */
   public deleteAction(option: boolean) {
     if(option) {
+      this.showLoading(true);
       this.deleteAdvertisement();
     }
     this.deleteShow = false;
     this.cd.detectChanges();
+  }
+
+  /** Muestra el componente spinner */
+  private showLoading (state: boolean) {
+    this._eventBusService.emit(new EventData('showLoading', state))
   }
   
   /**

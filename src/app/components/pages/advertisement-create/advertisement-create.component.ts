@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { cities } from '../../../models/cities';
@@ -7,6 +7,9 @@ import { otherServices } from 'src/app/models/otherServices';
 import { AdvertisementService } from 'src/app/services/advertisement.service';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/models/user.model';
+import { FirebaseStorageService } from 'src/app/services/firestore.service';
+import { AngularFireUploadTask } from '@angular/fire/storage';
+import { EventBusService, EventData } from 'src/app/services/event.service';
 
 @Component({
   selector: 'app-advertisement-create',
@@ -14,21 +17,24 @@ import { User } from 'src/app/models/user.model';
   styleUrls: ['./advertisement-create.component.sass'],
   providers: [AdvertisementService, UserService]
 })
-export class AdvertisementCreateComponent implements OnInit {
+export class AdvertisementCreateComponent implements OnInit, OnDestroy {
 
   public isSubmitted: boolean = false;
-  public myUser: User;
+  public user: User;
   public energeticsType: Array<string> = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
   public typesHouse: typeof typesHouse = typesHouse;
   public otherServices: typeof otherServices = otherServices;
   public cities: Array<string> = cities;
-  public selectedFiles?: Array<string> = [];
+  public selectedFiles: Array<File> = [];
+  public advertisementPhotoURLs: Array<String> = [];
+  public advertisementImages: Array<String> = [];
+  public uploadingData: Boolean = false;
   /** Id del anuncio */
   public id: string;
 
   /* Form */
   public advertisementForm = this.fb.group({
-    type: ['1: piso', [Validators.required]],
+    type: ['Piso', [Validators.required]],
     furnished: ['no', [Validators.required]],
     description: [null, [Validators.required]],
     price: [null, [Validators.required]],
@@ -43,7 +49,7 @@ export class AdvertisementCreateComponent implements OnInit {
     energeticCert: ['G', [Validators.required]],
     contractClauses: [null, [Validators.required]],
     inventory: [''],
-    images: [''],
+    images: [null, [Validators.required]],
     elevator: [false],
     garage: [false],
     trastero: [false],
@@ -56,6 +62,8 @@ export class AdvertisementCreateComponent implements OnInit {
   })
 
   constructor(
+    private _eventBusService: EventBusService,
+    private _firebaseStorageService: FirebaseStorageService,
     private _advertisementService: AdvertisementService,
     private _userService: UserService,
     public fb: FormBuilder,
@@ -64,12 +72,19 @@ export class AdvertisementCreateComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.user = JSON.parse(localStorage.getItem('mongoUser'));
     this._route.params.subscribe((params: Params) => {
       if (params.id) this.id = params.id;
     });
 
-    this.getUser();
-    if (this.id) this.getAdvertisement();
+    if (this.id) {
+      this.getAdvertisement();
+    }
+  }
+
+  /** Muestra el componente spinner */
+  private showLoading (state: boolean) {
+    this._eventBusService.emit(new EventData('showLoading', state))
   }
 
   /** Recoge los datos del anuncio */
@@ -77,8 +92,19 @@ export class AdvertisementCreateComponent implements OnInit {
     this._advertisementService.getAdvertisement(this.id).subscribe(
       response => {
         const advertisement = response.advertisement;
+        // Si no es nuestro, no podremos editarlo
+        if (!advertisement || this.user._id !== advertisement.author) {
+          this._router.navigate(['']);
+          return;
+        }
+
+        this.showLoading(true);
+        // Si tiene imagenes las recogemos
+        if (advertisement.images) {
+          this.advertisementImages = advertisement.images;
+        };
         // Guardamos los datos en el formulario
-        this.advertisementForm.patchValue({ 
+        this.advertisementForm.patchValue({
           type: advertisement.type,
           price: advertisement.price,
           size: advertisement.size,
@@ -95,6 +121,8 @@ export class AdvertisementCreateComponent implements OnInit {
           postalCode: advertisement.address.postalCode,
           city: advertisement.address.city
         });
+        this.advertisementForm.controls['images'].clearValidators();
+        this.advertisementForm.controls['images'].updateValueAndValidity()
 
         advertisement.otherServices.forEach(adService => {
           otherServices.forEach(s => {
@@ -106,41 +134,9 @@ export class AdvertisementCreateComponent implements OnInit {
             };
           })
         });
+        this.showLoading(false);
       }
     );
-  }
-
-  /** Recoge los datos del usuario */
-  public getUser() {
-    const localUser = JSON.parse(localStorage.getItem('user'));
-    this._userService.getUser(localUser.uid).subscribe(
-      response => {
-        this.myUser = response.user;
-      },
-      error => {
-        console.log(<any>error);
-      }
-    );
-  }
-
-  /** Selecciona los ficheros de imagenes */
-  public async selectFile(event: any): Promise<void> {
-    const files = event.target.files;
-
-    for (let file of files) {
-      const base64: any = await this.fileToBase64(file);
-      this.selectedFiles.push(base64);
-    }
-  }
-
-  /** Convierte ficheros a base64 */
-  public fileToBase64(file: File) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
   }
 
   /** Obtiene los servicios marcados del anuncio */
@@ -173,75 +169,178 @@ export class AdvertisementCreateComponent implements OnInit {
     return arrServicesName;
   }
 
-  /** Llama al servicio para añadir un usuario */
+  /** Selecciona los ficheros de imagenes */
+  public selectFile(event: any) {
+    const files = event.target.files;
+    this.selectedFiles = files;
+  }
+
+  /** Llama al servicio para añadir un anuncio */
   public addAdvertisement(params: any) {
     this._advertisementService.addAdvertisement(params).subscribe((response: any) => {
-      // Agregamos el anuncio al array del usuario
-      this.myUser.advertisements.push(response.advertisement._id);
+      // Agregamos el anuncio al array del anuncio
+      this.user.advertisements.push(response.advertisement._id);
       const update = {
-        _id: this.myUser._id,
-        advertisements: this.myUser.advertisements
+        _id: this.user._id,
+        advertisements: this.user.advertisements
       }
-      this._userService.updateUser(update).subscribe((response: {}) => {
-      });
 
-      // Navegamos al detalle del anuncio
-      this._router.navigate(['/advertisement/' + response.advertisement._id]);
+      this._userService.updateUser(update)
+        .then((value: any) => {
+          localStorage.removeItem('mongoUser');
+          localStorage.setItem('mongoUser', JSON.stringify(value.user));
+          this.id = response.advertisement._id;
+          this.uploadAdvertisementPhoto()
+            .then((advertisementPhotoURLs) => {
+              this.advertisementPhotoURLs = advertisementPhotoURLs;
+              const params = {
+                _id: this.id,
+                images: this.advertisementPhotoURLs,
+              };
+              this.updateAdvertisement(params);
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     });
   }
 
-  /** Llama al servicio para añadir un usuario */
+  /** Llama al servicio para añadir un anuncio */
   public updateAdvertisement(params: any) {
     this._advertisementService.updateAdvertisement(params).subscribe(
       response => {
+        this.uploadingData = false;
+        this.showLoading(false);
         this._router.navigate(['/advertisement/' + this.id]);
       }
     );
   }
-  
+
+  /** Actualiza las fotos de un anuncio ya creado que está en proceso de edición */
+  private updateAdPhotos() {
+    this._firebaseStorageService.removePhotos(this.user._id, this.id)
+    .then(() => {
+      this.uploadAdvertisementPhoto()
+        .then((advertisementPhotoURLs) => {
+          this.advertisementPhotoURLs = advertisementPhotoURLs;
+          this.makeAdvertisementParams();
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+    })
+    .catch((err) => {
+      console.error(err);
+    })
+  }
+
   /** Recoge los datos del formulario para crear/editar el anuncio */
   public createOrEditAdvertisement() {
     this.isSubmitted = true;
+    this.uploadingData = true;
     if (this.advertisementForm.valid) {
-      const params = {
-        isCompany: this.myUser._type === 'company',
-        published: false,
-        lastModified: new Date,
-        author: this.myUser._id,
-        type: this.advertisementForm.value.type,
-        price: this.advertisementForm.value.price,
-        size: this.advertisementForm.value.size,
-        energeticCert: this.advertisementForm.value.energeticCert,
-        furnished: this.advertisementForm.value.furnished,
-        rooms: this.advertisementForm.value.rooms,
-        toilets: this.advertisementForm.value.toilets,
-        deposit: this.advertisementForm.value.deposit,
-        description: this.advertisementForm.value.description,
-        contractClauses: this.advertisementForm.value.contractClauses,
-        inventory: this.advertisementForm.value.inventory,
-        address: {
-          street: this.advertisementForm.value.street,
-          number: this.advertisementForm.value.number,
-          postalCode: this.advertisementForm.value.postalCode,
-          city: this.advertisementForm.value.city,
-        },
-        otherServices: this.getOtherServices()
-      };
-
-      // Llama al servicio de edición o creación
-      if (this.id) {
-        Object.assign(params, {
-          _id: this.id
-        });
-
-        this.updateAdvertisement(params);
-      } else {
-        Object.assign(params, {
-          images: this.selectedFiles
-        });
-        this.addAdvertisement(params);
+      this.showLoading(true);
+      if (this.id && this.selectedFiles.length > 0) {
+        this.updateAdPhotos();
+        return;
       }
+      this.makeAdvertisementParams();
     }
   }
 
+  /** Obtiene los datos del formulario */
+  private makeAdvertisementParams() {
+    const params = {
+      isCompany: this.user._type === 'company',
+      published: false,
+      lastModified: new Date,
+      author: this.user._id,
+      type: this.advertisementForm.value.type,
+      price: this.advertisementForm.value.price,
+      size: this.advertisementForm.value.size,
+      energeticCert: this.advertisementForm.value.energeticCert,
+      furnished: this.advertisementForm.value.furnished,
+      rooms: this.advertisementForm.value.rooms,
+      toilets: this.advertisementForm.value.toilets,
+      deposit: this.advertisementForm.value.deposit,
+      description: this.advertisementForm.value.description,
+      contractClauses: this.advertisementForm.value.contractClauses,
+      inventory: this.advertisementForm.value.inventory,
+      address: {
+        street: this.advertisementForm.value.street,
+        number: this.advertisementForm.value.number,
+        postalCode: this.advertisementForm.value.postalCode,
+        city: this.advertisementForm.value.city,
+      },
+      otherServices: this.getOtherServices(),
+      images: this.advertisementPhotoURLs.length > 0 ? this.advertisementPhotoURLs : this.advertisementImages,
+    };
+
+    // Llama al servicio de edición o creación
+    if (this.id) {
+      Object.assign(params, {
+        _id: this.id
+      });
+
+      this.updateAdvertisement(params);
+    } else {
+      this.addAdvertisement(params);
+    }
+  }
+
+  /**
+   * Devuelve una promesa con todas las imágenes
+   */
+  private uploadAdvertisementPhoto(): Promise<Array<String>> {
+    const photoUploads: Array<Promise<String>> = [];
+    return new Promise((response, reject) => {
+      // Procesamos cada fichero seleccionado
+      Array.from(this.selectedFiles).forEach((file) => {
+        const fileUploadPromise = this.uploadPhoto(file);
+        photoUploads.push(fileUploadPromise);
+      });
+
+      Promise.all(photoUploads)
+        .then((values) => {
+          response(values);
+        })
+        .catch((err) => {
+          reject(err);
+        })
+    })
+  }
+
+  /**
+   * Sube una imagen a Firebase Storage
+   */
+  private uploadPhoto(file: File): Promise<String> {
+    return new Promise((response, reject) => {
+      const filename = file.name;
+      const userId = this.user._id;
+      const path = `images/${userId}/${this.id}/${filename}`
+
+      const fileReference = this._firebaseStorageService.getReferenceFromFilename(filename, userId, path);
+      const uploadTask: AngularFireUploadTask =  this._firebaseStorageService.uploadFile(filename, file, userId, path)
+
+      uploadTask.percentageChanges().subscribe((percent) => {
+        let actualProgress = Math.round(percent);
+
+        if (actualProgress === 100) {
+          fileReference.getDownloadURL().subscribe((photoURL) => {
+            response(photoURL);
+          })
+        }
+      });
+    })
+  }
+
+  ngOnDestroy() {
+    this.selectedFiles = [];
+    this.advertisementPhotoURLs = [];
+    this.id = null;
+  }
 }

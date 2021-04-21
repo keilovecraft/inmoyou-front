@@ -23,13 +23,26 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
     this.authService.ReturnState().subscribe((user) => {
       this.isLogged = (user) ? Object.entries(user).length > 0 : false;
+
+      const imLogin = localStorage.getItem('imLogin') === 'true';
       // Nos traemos los datos del usuario
-      if (user) {
+      if (imLogin) {
         this._userService.getUser(user.uid).subscribe((response: any) => {
           this.isAdmin = response.user.admin;
+          localStorage.setItem('mongoUser', JSON.stringify(response.user));
+          localStorage.removeItem('imLogin');
+
+          this.getUserType();
         });
       };
     });
+  }
+
+  /** Obtenemos el tipo de usuario */
+  public getUserType() {
+    const mongoUser = JSON.parse(localStorage.getItem('mongoUser'));
+    this.isAdmin = mongoUser.admin;
+    this.isCompany = mongoUser._type === 'company';
   }
 
   /** Navega hasta la autenticación o cerrar sesión */

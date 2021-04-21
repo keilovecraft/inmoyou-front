@@ -1,10 +1,13 @@
 <button [id]="id"
-  [disabled]="isDisabled === true"
+  [disabled]="isDisabled === true || isLoading === true"
   [ngClass]="{
     'button--disabled': isDisabled !== false
   }"
   [type]="type"
   (click)="buttonClicked()"
 >
+  <div *ngIf="isLoading" class="loader">
+    <div class="loader__loading"></div>
+  </div>
   {{ text }}
 </button>

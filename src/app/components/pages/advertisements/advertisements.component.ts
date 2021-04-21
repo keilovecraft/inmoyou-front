@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Advertisement } from '../../../models/advertisement.model';
 import { AdvertisementService } from '../../../services/advertisement.service';
+import { EventBusService, EventData } from '../../../services/event.service';
 import { orders } from '../../../models/orders';
 
 @Component({
@@ -15,14 +16,17 @@ import { orders } from '../../../models/orders';
 export class AdvertisementsComponent implements OnInit {
 
   public typesOrder: typeof orders = orders;
-  public advertisements: Array<Advertisement>;
+  public advertisements: Array<Advertisement> = [];
   public advertisementsFiltered: Array<Advertisement>;
   public numAdvertisements: number = 0;
+  public gettingAds: boolean = false;
+  public selectedOrder: string = '';
   orderForm: FormGroup;
 
   public filters: any = {}
 
   constructor(
+    private _eventBusService: EventBusService,
     private _advertisementService: AdvertisementService,
     private _route: ActivatedRoute,
     private readonly fb: FormBuilder
@@ -42,14 +46,22 @@ export class AdvertisementsComponent implements OnInit {
       }
     });
 
-    this.getAdvertisements();
+    const options = {
+      published: true,
+      orderBy: '-lastModified'
+    };
+
+    this.showLoading(true);
+    this.getAdvertisements(options);
   }
 
   /** Cambia el orden en el que se muestran los anuncios */
-  changeOrder(event: any) {
-    const order: string = event.substring(3, );
+  changeOrder(event?: any) {
+    if (event) {
+      this.selectedOrder = event.substring(3, );
+    }
 
-    switch (order) {
+    switch (this.selectedOrder) {
       case 'date':
         this.advertisementsFiltered.sort((val1, val2)=> { return val1.lastModified < val2.lastModified ? 1 : -1})
         break;
@@ -72,17 +84,24 @@ export class AdvertisementsComponent implements OnInit {
     }
   }
 
+  /** Muestra el componente spinner */
+  private showLoading (state: boolean) {
+    this._eventBusService.emit(new EventData('showLoading', state))
+  }
+
   /** Trae los anuncios en BD */
-  public getAdvertisements() {
-    this._advertisementService.getAdvertisements().subscribe(
+  public getAdvertisements(options: any) {
+    this.gettingAds = true;
+    this._advertisementService.getAdvertisements(options).subscribe(
       response => {
-        this.advertisements = response.advertisements.filter(ad => ad.published);;
+        this.advertisements = response.advertisements;
         this.advertisements.forEach(ad => {
           ad.description = ad.description.length > 200 ? `${ad.description.substring(0, 200)}...` : ad.description;
         });
 
         this.advertisementsFiltered = this.advertisements;
         this.filterAdvertisements();
+        this.showLoading(false);
       },
       error => {
         console.log(<any>error);
@@ -94,7 +113,7 @@ export class AdvertisementsComponent implements OnInit {
   public filterAdvertisements(event?: any) {
     if(event) this.filters = event;
     const hasFilters = Object.values(this.filters).some(x => {
-      return x !== undefined && x !== "" && (typeof x == "object" && Object.values(x).length > 0);
+      return x !== undefined && x !== "" && (typeof x == "object" && Object.values(x).length > 0 || typeof x == 'string');
     });
     this.advertisementsFiltered = this.advertisements;
 
@@ -139,6 +158,10 @@ export class AdvertisementsComponent implements OnInit {
     }
 
     if (this.advertisementsFiltered) this.numAdvertisements = this.advertisementsFiltered.length;
+
+    this.changeOrder();
+
+    this.gettingAds = false;
   }
 
 }

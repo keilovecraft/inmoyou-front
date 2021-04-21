@@ -1,19 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { Global } from './globals';
+import { environment } from '../../environments/environment';
 import { User } from '../models/user.model';
 
 @Injectable()
 export class UserService {
   public url: string;
-  public images: string;
 
   constructor(
     private _http: HttpClient
   ){
-    this.url = Global.url;
-    this.images = Global.images;
+    this.url = environment.url;
   }
 
   public httpHeader = {
@@ -45,7 +43,7 @@ export class UserService {
   public updateUser(params: any) {
     const id = params._id;
 
-    return this._http.put(this.url + '/user/'+id, params, this.httpHeader);
+    return this._http.put(this.url + '/user/'+id, params, this.httpHeader).toPromise();
   }
 
 }

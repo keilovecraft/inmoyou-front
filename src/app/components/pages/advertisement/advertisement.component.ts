@@ -3,6 +3,8 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Advertisement } from 'src/app/models/advertisement.model';
 import { User } from 'src/app/models/user.model';
 import { AdvertisementService } from 'src/app/services/advertisement.service';
+import { EventBusService, EventData } from 'src/app/services/event.service';
+import { FirebaseStorageService } from 'src/app/services/firestore.service';
 import { UserService } from 'src/app/services/user.service';
 import { SwiperOptions } from 'swiper';
 
@@ -45,63 +47,71 @@ export class AdvertisementComponent implements OnInit {
   public isFav: boolean = false;
 
   constructor(
+    private _eventBusService: EventBusService,
     private cd: ChangeDetectorRef,
     private _userService: UserService,
     private _advertisementService: AdvertisementService,
+    private _firebaseStorageService: FirebaseStorageService,
     private _route: ActivatedRoute,
     private _router: Router
   ) { }
 
   ngOnInit(): void {
+    this.showLoading(true);
     this._route.params.subscribe((params: Params) => {
-      if (params.id) this.id = params.id;
+      if (params.id) {
+        this.id = params.id;
+        this.getAdvertisement(params.id);
+      };
     });
 
     this.getData();
   }
 
-  /** Trae los datos del anuncio */
-  public getAdvertisement() {
-    this._advertisementService.getAdvertisement(this.id).subscribe(
-      response => {
-        this.advertisement = response.advertisement;
-        this.title = `${this.advertisement.type} en calle ${this.advertisement.address.street}, ${this.advertisement.address.number}`;
-        // Vemos si es nuestro anuncio
-        if (this.user && this.advertisement.author === this.user._id) {
-          this.isEdit = true;
-        }
-      },
-      error => {
-        console.log(<any>error);
-      }
-    );
+  /** Muestra el componente spinner */
+  private showLoading (state: boolean) {
+    this._eventBusService.emit(new EventData('showLoading', state))
   }
 
   /** Método para traer los datos del usuario */
   public getData(){
     // Nos traemos los datos del usuario
-    const actualUser: any = JSON.parse(localStorage.getItem('user'));
-    // Traemos el usuario que tiene ese authId
-    if (actualUser) {
-      this._userService.getUser(actualUser.uid).subscribe((response: any) => {
-        this.user = response.user;
-
-        // Si somos particulares, lo podemos añadir como favorito
-        if (this.user._type !== 'company') {
-          this.canFav = true;
-        }
-        // Vemos si ya lo tenemos como favorito
-        if (this.canFav) {
-          this.isFav = this.user.favourites.includes(this.id);
-        }
-
-        // Recogemos los datos del anuncio
-        this.getAdvertisement();
-      });
-    } else {
-      // Recogemos los datos del anuncio
-      this.getAdvertisement();
+    this.user = JSON.parse(localStorage.getItem('mongoUser'));
+    if (this.user) {
+      // Si somos particulares, lo podemos añadir como favorito
+      if (this.user._type !== 'company' && !this.user.admin) {
+        this.canFav = true;
+      }
+      // Vemos si ya lo tenemos como favorito
+      if (this.canFav) {
+        this.isFav = this.user.favourites.includes(this.id);
+      }
     }
+  }
+
+  /** Trae los datos del anuncio */
+  public getAdvertisement(id: string) {
+    this._advertisementService.getAdvertisement(id).subscribe(
+      response => {
+        this.advertisement = response.advertisement;
+        this.title = `${this.advertisement.type} en calle ${this.advertisement.address.street}, ${this.advertisement.address.number}`;
+        // Si está pendiente de validación, solo lo puede ver el author
+        if (!this.advertisement.published && (!this.user.admin && this.user._id !== this.advertisement.author)) {
+          this.showLoading(false);
+          this._router.navigate(['']);
+          return;
+        }
+        // Vemos si es nuestro anuncio
+        if (this.user && this.advertisement.author === this.user._id) {
+          this.isEdit = true;
+        }
+        this.showLoading(false);
+      },
+      error => {
+        this.showLoading(false);
+        console.log(<any>error);
+      }
+    );
   }
 
   /** Borra el anuncio y lo elimina del array del usuario */
@@ -114,11 +124,27 @@ export class AdvertisementComponent implements OnInit {
           _id: this.user._id,
           advertisements : arrAdvertisements
         }
-        this._userService.updateUser(updateData).subscribe((response: {}) => {
-        });
-
-        // Navegamos a mis anuncios
-        this._router.navigate(['/my-advertisements']);
+        this._userService.updateUser(updateData)
+          .then((value: any) => {
+            localStorage.removeItem('mongoUser');
+            localStorage.setItem('mongoUser', JSON.stringify(value.user));
+            this._firebaseStorageService.removePhotos(this.user._id, this.id)
+              .then(() => {
+                this.showLoading(false);
+                // Navegamos a mis anuncios o al listado de bloqueados en caso de ser admin
+                if(this.user.admin) {
+                  this._router.navigate(['/administration']);
+                } else {
+                  this._router.navigate(['/my-advertisements']);
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       },
       error => {
         console.log(<any>error);
@@ -128,6 +154,7 @@ export class AdvertisementComponent implements OnInit {
 
   /** Accion que recoge los datos de la modal para borrar un anuncio */
   public deleteAction(option: boolean) {
+    this.showLoading(true);
     if(option) {
       this.deleteAdvertisement();
     }
@@ -166,9 +193,15 @@ export class AdvertisementComponent implements OnInit {
     };
 
     // Actualizar datos de usuario
-    this._userService.updateUser(updateData).subscribe((response: {}) => {
-      this.isFav = !this.isFav;
-    });
+    this._userService.updateUser(updateData)
+      .then((value: any) => {
+        this.isFav = !this.isFav;
+        localStorage.removeItem('mongoUser');
+        localStorage.setItem('mongoUser', JSON.stringify(value.user));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
 }

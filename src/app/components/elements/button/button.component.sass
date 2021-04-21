@@ -8,6 +8,8 @@
   --button-font: 400 1em 'Open Sans'
 
 button
+  display: flex
+  justify-content: center
   cursor: pointer
   min-width: 10em
   background-color: var(--button-bg)
@@ -23,3 +25,21 @@ button
   &[disabled]
     opacity: .7
     pointer-events: none
+  .loader
+    top: 50%
+    position: relative
+    transform: translate(-50%, -50%)
+    &__loading
+      border: 2px solid #ccc
+      width: 20px
+      height: 20px
+      border-radius: 50%
+      border-top-color: #1ecd97
+      border-left-color: #1ecd97
+      animation: spin 1s infinite ease-in
+
+@keyframes spin
+  0% 
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)

@@ -10,114 +10,120 @@
       <div class="advertisement__item advertisement__item--multiple">
         <p class="advertisement__label advertisement__label--parent">Dirección:</p>
         <div class="advertisement__item advertisement__item--full">
-          <label class="advertisement__label">Calle:</label>
+          <label class="advertisement__label">Calle: *</label>
           <input type="text" [formControlName]="'street'">
           <!-- error block -->
-          <div class="invalid-feedback" *ngIf="advertisementForm.get('street').dirty && advertisementForm.get('street').errors?.required">
+          <div class="invalid-feedback" *ngIf="(advertisementForm.get('street').dirty || advertisementForm.get('street').touched) && advertisementForm.get('street').errors?.required">
             <sup>*</sup>Este campo es obligatorio.
           </div>
         </div>
         <div class="advertisement__item advertisement__item--small">
-          <label class="advertisement__label">Número:</label>
-          <input type="text" [formControlName]="'number'">
+          <label class="advertisement__label">Número: *</label>
+          <input type="number" min="0" [formControlName]="'number'">
           <!-- error block -->
-          <div class="invalid-feedback" *ngIf="advertisementForm.get('number').dirty && advertisementForm.get('number').errors?.required">
+          <div class="invalid-feedback" *ngIf="(advertisementForm.get('number').dirty || advertisementForm.get('number').touched) && advertisementForm.get('number').errors?.required">
             <sup>*</sup>Este campo es obligatorio.
           </div>
         </div>
         <div class="advertisement__item advertisement__item--small">
-          <label class="advertisement__label">CP:</label>
-          <input type="text" [formControlName]="'postalCode'">
+          <label class="advertisement__label">CP: *</label>
+          <input type="number" min="0" [formControlName]="'postalCode'">
           <!-- error block -->
-          <div class="invalid-feedback" *ngIf="advertisementForm.get('postalCode').dirty && advertisementForm.get('postalCode').errors?.required">
+          <div class="invalid-feedback" *ngIf="(advertisementForm.get('postalCode').dirty || advertisementForm.get('postalCode').touched) && advertisementForm.get('postalCode').errors?.required">
             <sup>*</sup>Este campo es obligatorio.
           </div>
         </div>
         <div class="advertisement__item advertisement__item">
-          <label class="advertisement__label">Ciudad:</label>
+          <label class="advertisement__label">Provincia: *</label>
           <select formControlName="city">
             <option value="">Selecciona</option>
             <option *ngFor="let city of cities">{{city}}
             </option>
           </select>
           <!-- error block -->
-          <div class="invalid-feedback" *ngIf="advertisementForm.get('city').dirty && advertisementForm.get('city').errors?.required">
-            <sup>*</sup>Selecciona una opción.
+          <div class="invalid-feedback" *ngIf="(advertisementForm.get('city').dirty || advertisementForm.get('city').touched) && advertisementForm.get('city').errors?.required">
+            <sup>*</sup>Este campo es obligatorio.
           </div>
         </div>
       </div>
 
       <div class="advertisement__item advertisement__item--small">
-        <label>Tipo:</label>
+        <label>Tipo: *</label>
         <select formControlName="type">
-          <option value="">Selecciona</option>
           <option *ngFor="let type of typesHouse">{{type}}
           </option>
         </select>
         <!-- error block -->
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('type').dirty && advertisementForm.get('type').errors?.required">
-          <sup>*</sup>Selecciona una opción.
-        </div>
-      </div>
-  
-      <div class="advertisement__item advertisement__item--small">
-        <label class="advertisement__label">Precio:</label>
-        <input type="text" [formControlName]="'price'">
-        <!-- error block -->
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('price').dirty && advertisementForm.get('price').errors?.required">
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('type').dirty || advertisementForm.get('type').touched) && advertisementForm.get('type').errors?.required">
           <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
   
       <div class="advertisement__item advertisement__item--small">
-        <label class="advertisement__label">Tamaño:</label>
-        <input type="text" [formControlName]="'size'">
+        <label class="advertisement__label">Precio: *</label>
+        <input type="number" min="0" [formControlName]="'price'">
         <!-- error block -->
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('size').dirty && advertisementForm.get('size').errors?.required">
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('price').dirty || advertisementForm.get('price').touched) && advertisementForm.get('price').errors?.required">
           <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
-
+  
       <div class="advertisement__item advertisement__item--small">
-        <label>Energía:</label>
+        <label class="advertisement__label">Tamaño (m²): *</label>
+        <input type="number" min="0" [formControlName]="'size'">
+        <!-- error block -->
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('size').dirty || advertisementForm.get('size').touched) && advertisementForm.get('size').errors?.required">
+          <sup>*</sup>Este campo es obligatorio.
+        </div>
+      </div>
+      
+      <div class="advertisement__item advertisement__item--small">
+        <label>Energía: *</label>
         <select formControlName="energeticCert">
           <option *ngFor="let item of energeticsType" [ngValue]="item">{{ item }}
           </option>
         </select>
-    
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('energeticCert').dirty && advertisementForm.get('energeticCert').errors?.required">
-          <sup>*</sup>Selecciona una opción.
+        <!-- error block -->
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('energeticCert').dirty || advertisementForm.get('energeticCert').touched) && advertisementForm.get('energeticCert').errors?.required">
+          <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
-
+      
       <div class="advertisement__item advertisement__item--small">
-        <label class="advertisement__label">Amueblado:</label>
+        <label class="advertisement__label">Amueblado: *</label>
         <select formControlName="furnished">
           <option value="yes">Si</option>
           <option value="no">No</option>
         </select>
-      </div>
-  
-      <div class="advertisement__item advertisement__item--small">
-        <label class="advertisement__label">Habitaciones:</label>
-        <input type="text" [formControlName]="'rooms'">
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('rooms').dirty && advertisementForm.get('rooms').errors?.required">
+        <!-- error block -->
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('furnished').dirty || advertisementForm.get('furnished').touched) && advertisementForm.get('furnished').errors?.required">
           <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
-  
+      
       <div class="advertisement__item advertisement__item--small">
-        <label class="advertisement__label">Baños:</label>
-        <input type="text" [formControlName]="'toilets'">
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('toilets').dirty && advertisementForm.get('toilets').errors?.required">
+        <label class="advertisement__label">Habitaciones: *</label>
+        <input type="number" min="0" [formControlName]="'rooms'">
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('rooms').dirty || advertisementForm.get('rooms').touched) && advertisementForm.get('rooms').errors?.required">
+          <sup>*</sup>Este campo es obligatorio.
+        </div>
+        <!-- error block -->
+      </div>
+      
+      <div class="advertisement__item advertisement__item--small">
+        <label class="advertisement__label">Baños: *</label>
+        <input type="number" min="0" [formControlName]="'toilets'">
+        <!-- error block -->
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('toilets').dirty || advertisementForm.get('toilets').touched) && advertisementForm.get('toilets').errors?.required">
           <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
-  
+      
       <div class="advertisement__item advertisement__item--small">
-        <label class="advertisement__label">Fianza:</label>
-        <input type="text" [formControlName]="'deposit'">
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('deposit').dirty && advertisementForm.get('deposit').errors?.required">
+        <label class="advertisement__label">Meses de fianza: *</label>
+        <input type="number" min="0" [formControlName]="'deposit'">
+        <!-- error block -->
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('deposit').dirty || advertisementForm.get('deposit').touched) && advertisementForm.get('deposit').errors?.required">
           <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
@@ -130,11 +136,14 @@
         </div>
       </div>
 
-      <div *ngIf="!id" class="advertisement__item">
+      <div class="advertisement__item">
         <label class="advertisement__label">Fotos:</label>
-        <input type="file" name="file" [formControlName]="'images'" multiple (change)="selectFile($event)">
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('images').dirty && advertisementForm.get('images').errors?.required">
-          <sup>*</sup>Selecciona una opción.
+        <div *ngFor="let img of advertisementImages" class="advertisement__image-wrapper">
+          <img class="advertisement__image" [src]="img" />
+        </div>
+        <input type="file" name="file" [formControlName]="'images'" (change)="selectFile($event)" multiple>
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('images').dirty || advertisementForm.get('images').touched) && advertisementForm.get('images').errors?.required">
+          <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
 
@@ -142,18 +151,18 @@
 
     <div class="advertisement__content">
       <div class="advertisement__item advertisement__item--full">
-        <label class="advertisement__label">Descripción:</label>
+        <label class="advertisement__label">Descripción: *</label>
         <textarea [formControlName]="'description'"></textarea>
         <!-- error block -->
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('description').dirty && advertisementForm.get('description').errors?.required">
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('description').dirty || advertisementForm.get('description').touched) && advertisementForm.get('description').errors?.required">
           <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
 
       <div class="advertisement__item advertisement__item--full">
-        <label class="advertisement__label">Claúsulas del contrato:</label>
+        <label class="advertisement__label">Claúsulas del contrato: *</label>
         <textarea [formControlName]="'contractClauses'"></textarea>
-        <div class="invalid-feedback" *ngIf="advertisementForm.get('contractClauses').dirty && advertisementForm.get('contractClauses').errors?.required">
+        <div class="invalid-feedback" *ngIf="(advertisementForm.get('contractClauses').dirty || advertisementForm.get('contractClauses').touched) && advertisementForm.get('contractClauses').errors?.required">
           <sup>*</sup>Este campo es obligatorio.
         </div>
       </div>
@@ -164,11 +173,13 @@
       </div>
 
     </div>
-
   </fieldset>
+
   <app-button
     class="advertisement__button"
     text="Guardar"
     type="submit"
+    [isLoading]="uploadingData"
+    [isDisabled]="!advertisementForm.valid"
   ></app-button>
 </form>

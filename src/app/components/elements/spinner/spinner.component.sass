@@ -1,0 +1,43 @@
+:host
+  // position: absolute
+  // top: 0
+  // left: 0
+  // z-index: 15
+  // width: 100%
+  // height: 100%
+
+.spinner
+  &__content
+    position: fixed
+    top: 50%
+    left: 50%
+    display: flex
+    justify-content: center
+    align-items: center
+    background-color: #edf0f5
+    border-radius: 10%
+    width: 100px
+    height: 100px
+  &__loader
+    border: 4px solid #ccc
+    width: 40px
+    height: 40px
+    border-radius: 50%
+    border-top-color: #1ecd97
+    border-left-color: #1ecd97
+    animation: spin 1s infinite ease-in
+.overlay
+  position: absolute
+  width: 100%
+  height: 100%
+  display: block
+  top: 0
+  left: 0
+  background-color: var(--black)
+  opacity: .5
+  pointer-events: none
+@keyframes spin
+  0% 
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)

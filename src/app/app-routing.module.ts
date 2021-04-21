@@ -14,6 +14,8 @@ import { MyAdvertisementsComponent } from './components/pages/my-advertisements/
 import { FavouritesComponent } from './components/pages/favourites/favourites.component';
 import { AdministrationComponent } from './components/pages/administration/administration.component';
 
+import { AuthGuard } from './app.guard';
+
 const routes: Routes = [
   {
     path: '',
@@ -29,7 +31,8 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    component: ProfileComponent
+    component: ProfileComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'advertisements',
@@ -41,27 +44,33 @@ const routes: Routes = [
   },
   {
     path: 'advertisement-create',
-    component: AdvertisementCreateComponent
+    component: AdvertisementCreateComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'advertisement-edit/:id',
-    component: AdvertisementCreateComponent
+    component: AdvertisementCreateComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'my-advertisements',
-    component: MyAdvertisementsComponent
+    component: MyAdvertisementsComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'favourites',
-    component: FavouritesComponent
+    component: FavouritesComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'administration',
-    component: AdministrationComponent
+    component: AdministrationComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
-    component: HomeComponent
+    component: HomeComponent,
+    canActivate: [AuthGuard]
   }
 ];
 

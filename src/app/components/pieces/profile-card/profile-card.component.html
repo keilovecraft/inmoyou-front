@@ -9,7 +9,7 @@
   </div>
 
   <ul class="profile-card__contact">
-    <li class="profile-card__item profile-card__item--phone" *ngIf="user.phone && (user.contactForm === 'tel' || user.contactForm === 'both')">{{ user.phone }}</li>
-    <li class="profile-card__item profile-card__item--mail" *ngIf="user.contactForm === 'email' || user.contactForm === 'both'">{{ user.email }}</li>
+    <li class="profile-card__item profile-card__item--phone" *ngIf="user.contactForm === 'tel' || user.contactForm === 'both'">{{ user.phone }}</li>
+    <li class="profile-card__item profile-card__item--mail" *ngIf="user.contactForm === 'mail' || user.contactForm === 'both'">{{ user.email }}</li>
   </ul>
 </div>

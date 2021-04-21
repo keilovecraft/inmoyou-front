@@ -9,6 +9,7 @@ export class ButtonComponent {
   @Input() public id: string = '';
   @Input() public type: string = '';
   @Input() public isDisabled: boolean = false;
+  @Input() public isLoading: boolean = false;
   @Input() public text: string = '';
 
   @Output() action = new EventEmitter();

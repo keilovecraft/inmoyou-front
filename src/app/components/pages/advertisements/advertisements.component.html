@@ -14,7 +14,7 @@
     </select>
   </form>
   
-  <ul>
+  <ul *ngIf="advertisementsFiltered">
     <li *ngFor="let add of advertisementsFiltered"
       class="advertisements__item"
     >
@@ -31,4 +31,5 @@
         ></app-card>
     </li>
   </ul>
+  <p class="empty-case" *ngIf="!advertisementsFiltered || advertisementsFiltered.length === 0">No existe ningún anuncio.</p>
 </div>

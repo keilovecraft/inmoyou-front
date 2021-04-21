@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Advertisement } from '../models/advertisement.model';
-import { Global } from './globals';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class AdvertisementService {
@@ -17,11 +17,11 @@ export class AdvertisementService {
   constructor(
     private _http: HttpClient
   ){
-    this.url = Global.url;
+    this.url = environment.url;
   }
 
-  public getAdvertisements(): Observable<any> {
-    return this._http.get(this.url+'/advertisements', this.httpHeader);
+  public getAdvertisements(params: any): Observable<any> {
+    return this._http.get(this.url+'/advertisements', { headers: this.httpHeader.headers, params: params });
   }
 
   public getAdvertisement(id: string): Observable<any> {

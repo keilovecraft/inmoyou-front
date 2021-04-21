@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  url: 'https://inmoyou.herokuapp.com/api',
   firebaseConfig: {
     apiKey: "AIzaSyBS7YOBYbuArQbwzlXm2g-zJQsH048I2mo",
     authDomain: "inmoyou.firebaseapp.com",

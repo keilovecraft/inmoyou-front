@@ -9,8 +9,8 @@
         <label>Correo electrónico:</label>
         <input type="email" [formControlName]="'email'" email>
         <!-- error block -->
-        <div *ngIf="loginForm.get('email').dirty && loginForm.get('email').errors?.required">
-          Email is a required field
+        <div *ngIf="loginForm.get('email').dirty && loginForm.get('email').errors?.required" class="invalid-feedback">
+          Debes introducir este campo.
         </div>
       </div>
 
@@ -18,8 +18,8 @@
         <label>Contraseña:</label>
         <input type="password" [formControlName]="'password'" >
         <!-- error block -->
-        <div *ngIf="loginForm.get('password').dirty && loginForm.get('password').errors?.required">
-          Password is a required field
+        <div *ngIf="loginForm.get('password').dirty && loginForm.get('password').errors?.required" class="invalid-feedback">
+          Debes introducir este campo.
         </div>
       </div>
 
@@ -28,6 +28,7 @@
       class="login__button"
       text="Iniciar sesión"
       type="submit"
+      [isDisabled]="!loginForm.valid"
     ></app-button>
   </form>
 </div>

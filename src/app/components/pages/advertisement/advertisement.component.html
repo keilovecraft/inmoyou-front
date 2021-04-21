@@ -1,79 +1,85 @@
-<app-modal-confirm *ngIf="deleteShow"
-  (action)="deleteAction($event)"
-></app-modal-confirm>
-<h2 class="advertisement__title">{{ title }}</h2>
+<ng-container *ngIf="advertisement; else emptyCase">
+  <app-modal-confirm *ngIf="deleteShow"
+    (action)="deleteAction($event)"
+  ></app-modal-confirm>
+  <h2 class="advertisement__title">{{ title }}</h2>
 
-<div *ngIf="advertisement" class="advertisement__wrapper">
-  <p *ngIf="!advertisement.published" class="advertisement__no-published">Pendiente de aprobación</p>
-  <swiper *ngIf="advertisement.images.length > 0" class="advertisement__swiper" [config]="config">
-    <div class="swiper-wrapper">
-      <img class="swiper-slide" *ngFor="let img of advertisement.images" [src]="img" />
+  <div *ngIf="advertisement" class="advertisement__wrapper">
+    <p *ngIf="!advertisement.published" class="advertisement__no-published">Pendiente de aprobación</p>
+    <swiper *ngIf="advertisement.images.length > 0" class="advertisement__swiper" [config]="config">
+      <div class="swiper-wrapper">
+        <img class="swiper-slide" *ngFor="let img of advertisement.images" [src]="img" />
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </swiper>
+
+    <div class="advertisement__buttons">
+      <button *ngIf="isEdit || user.admin"
+        class="advertisement__button advertisement__button--delete"
+        (click)="showModalDelete()"
+      ></button>
+      <button *ngIf="isEdit"
+        class="advertisement__button advertisement__button--edit"
+        (click)="editAction()"
+      ></button>
+      <button *ngIf="canFav"
+        class="advertisement__button"
+        [ngClass]="{
+          'advertisement__button--fav-fill': isFav,
+          'advertisement__button--fav': !isFav
+        }"
+        (click)="favAction()"
+      ></button>
     </div>
-    <div class="swiper-pagination"></div>
-    <div class="swiper-button-next"></div>
-    <div class="swiper-button-prev"></div>
-  </swiper>
 
-  <div class="advertisement__buttons">
-    <button *ngIf="isEdit"
-      class="advertisement__button advertisement__button--delete"
-      (click)="showModalDelete()"
-    ></button>
-    <button *ngIf="isEdit"
-      class="advertisement__button advertisement__button--edit"
-      (click)="editAction()"
-    ></button>
-    <button *ngIf="canFav"
-      class="advertisement__button"
-      [ngClass]="{
-        'advertisement__button--fav-fill': isFav,
-        'advertisement__button--fav': !isFav
-      }"
-      (click)="favAction()"
-    ></button>
+    <div *ngIf="advertisement" class="advertisement__info">
+      <span class="advertisement__info-item advertisement__info-item--bold">{{ advertisement.price }} €</span>
+      <div class="advertisement__info-descr">
+        <span class="advertisement__info-item">{{ advertisement.rooms }} hab.</span>
+        <span class="advertisement__info-item">{{ advertisement.size }} m².</span>
+        <span class="advertisement__info-item">{{ advertisement.toilets }} {{ advertisement.toilets > 1 ? 'baños' : 'baño'}}</span>
+        <span class="advertisement__info-item">( {{ advertisement.address.city }} )</span>
+      </div>
+    </div>
+
+    <div *ngIf="advertisement.description" class="advertisement__description">
+      <p>{{ advertisement.description }}</p>
+    </div>
+
+    <div *ngIf="advertisement" class="advertisement__detail">
+      <div class="advertisement__detail-item">
+        <h3 class="advertisement__detail-title">Características</h3>
+        <ul class="advertisement__detail-list">
+          <li><strong>Fianza:</strong> {{ advertisement.deposit }} {{ advertisement.deposit > 1 ? 'meses' : 'mes'}}</li>
+          <li><strong>Habitaciones:</strong> {{ advertisement.rooms }}</li>
+          <li><strong>Baños:</strong> {{ advertisement.toilets }}</li>
+          <li><strong>Tamaño:</strong> {{ advertisement.size }} m².</li>
+          <li><strong>Amueblado:</strong> {{ advertisement.furnished ? 'Si' : 'No' }}</li>
+          <li><strong>Certificación energética:</strong> {{ advertisement.energeticCert }}</li>
+        </ul>
+      </div>
+      <div *ngIf="advertisement.otherServices.length" class="advertisement__detail-item">
+        <h3 class="advertisement__detail-title">Servicios</h3>
+        <ul class="advertisement__detail-list">
+          <li *ngFor="let item of advertisement.otherServices">{{ item }}</li>
+        </ul>
+      </div>
+      <div *ngIf="advertisement.inventory" class="advertisement__detail-item">
+        <h3 class="advertisement__detail-title">Inventario</h3>
+        <p>{{ advertisement.inventory }}</p>
+      </div>
+      <div *ngIf="advertisement.contractClauses" class="advertisement__detail-item">
+        <h3 class="advertisement__detail-title">Claúsulas de contrato</h3>
+        <p>{{ advertisement.contractClauses }}</p>
+      </div>
+    </div>
+
   </div>
 
-  <div *ngIf="advertisement" class="advertisement__info">
-    <span class="advertisement__info-item advertisement__info-item--bold">{{ advertisement.price }} €</span>
-    <div class="advertisement__info-descr">
-      <span class="advertisement__info-item">{{ advertisement.rooms }} hab.</span>
-      <span class="advertisement__info-item">{{ advertisement.size }} m².</span>
-      <span class="advertisement__info-item">{{ advertisement.toilets }} {{ advertisement.toilets > 1 ? 'baños' : 'baño'}}</span>
-    </div>
-  </div>
-
-  <div *ngIf="advertisement && advertisement.description" class="advertisement__description">
-    <p>{{ advertisement.description }}</p>
-  </div>
-
-  <div *ngIf="advertisement" class="advertisement__detail">
-    <div class="advertisement__detail-item">
-      <h3 class="advertisement__detail-title">Características</h3>
-      <ul class="advertisement__detail-list">
-        <li><strong>Fianza:</strong> {{ advertisement.deposit }} {{ advertisement.deposit > 1 ? 'meses' : 'mes'}}</li>
-        <li><strong>Habitaciones:</strong> {{ advertisement.rooms }}</li>
-        <li><strong>Baños:</strong> {{ advertisement.toilets }}</li>
-        <li><strong>Tamaño:</strong> {{ advertisement.size }} m².</li>
-        <li><strong>Amueblado:</strong> {{ advertisement.furnished ? 'Si' : 'No' }}</li>
-        <li><strong>Certificación energética:</strong> {{ advertisement.energeticCert }}</li>
-      </ul>
-    </div>
-    <div class="advertisement__detail-item">
-      <h3 class="advertisement__detail-title">Servicios</h3>
-      <ul class="advertisement__detail-list">
-        <li *ngFor="let item of advertisement.otherServices">{{ item }}</li>
-      </ul>
-    </div>
-    <div *ngIf="advertisement && advertisement.inventory" class="advertisement__detail-item">
-      <h3 class="advertisement__detail-title">Inventario</h3>
-      <p>{{ advertisement.inventory }}</p>
-    </div>
-    <div *ngIf="advertisement && advertisement.contractClauses" class="advertisement__detail-item">
-      <h3 class="advertisement__detail-title">Claúsulas de contrato</h3>
-      <p>{{ advertisement.contractClauses }}</p>
-    </div>
-  </div>
-
-</div>
-
-<app-profile-card *ngIf="advertisement && advertisement.author" class="advertisement__profile" [id]="advertisement.author"></app-profile-card>
+  <app-profile-card *ngIf="advertisement.author" class="advertisement__profile" [id]="advertisement.author"></app-profile-card>
+</ng-container>
+<ng-template #emptyCase>
+  <h2>No existe el anuncio.</h2>
+</ng-template>

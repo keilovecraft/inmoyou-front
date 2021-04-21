@@ -7,7 +7,7 @@
   ></app-button>
 </div>
 
-<ul>
+<ul *ngIf="advertisements">
   <li *ngFor="let add of advertisements"
     class="advertisements__item"
   >
@@ -23,7 +23,8 @@
         [descr]="add.description"
         [isEdit]="true"
         [published]="add.published"
-        (delete)="removeFromArray($event)"
+        (delete)="deleteAdvertisement(add._id)"
       ></app-card>
   </li>
 </ul>
+<p *ngIf="!advertisements || advertisements.length === 0">No tienes ningún anuncio.</p>
